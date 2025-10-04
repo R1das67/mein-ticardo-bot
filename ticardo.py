@@ -54,7 +54,9 @@ async def ticket_starten(interaction: discord.Interaction):
         color=discord.Color.orange()
     )
     view = TicketOpenPersistentView()
-    await interaction.response.send_message(embed=embed, view=view)
+    # Bot-Nachricht ohne "Antwortsymbol" senden
+    await interaction.channel.send(embed=embed, view=view)
+    await interaction.response.defer(ephemeral=True)
 
 # ============ BUTTONS ============
 
@@ -71,6 +73,9 @@ class TicketOpenButton(discord.ui.Button):
         ticket_count += 1
         guild = interaction.guild
         category = guild.get_channel(ticket_category_id)
+        if category is None:
+            await interaction.response.send_message("❌ Die angegebene Kategorie existiert nicht oder ist ungültig.", ephemeral=True)
+            return
 
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(view_channel=False),
@@ -91,7 +96,7 @@ class TicketOpenButton(discord.ui.Button):
 
         # Embed im Ticket
         embed1 = discord.Embed(
-            description=f"<@&{ticket_mod_role_id}>",
+            description=f"<@&{ticket_mod_role_id}>" if ticket_mod_role_id else "",
             color=discord.Color.orange()
         )
         embed2 = discord.Embed(
