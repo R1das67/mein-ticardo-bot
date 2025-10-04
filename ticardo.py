@@ -46,8 +46,6 @@ async def set_ticket_mod(interaction: discord.Interaction, role_id: str):
 # /ticket-starten
 @bot.tree.command(name="ticket-starten", description="Erstellt den Ticket Button")
 async def ticket_starten(interaction: discord.Interaction):
-    await interaction.response.defer(ephemeral=True)
-
     embed = discord.Embed(
         title="📨 Support Ticket",
         description="Bitte erstelle ein Ticket um deine Angelegenheiten mit dem Support zu besprechen.",
@@ -57,6 +55,9 @@ async def ticket_starten(interaction: discord.Interaction):
 
     # Normale Nachricht vom Bot in den Kanal, kein Antwortsymbol
     await interaction.channel.send(embed=embed, view=view)
+
+    # Optional noch eine kurze Bestätigung ephemer
+    await interaction.response.send_message("✅ Ticket-Nachricht wurde gesendet.", ephemeral=True)
 
 # ============ BUTTONS ============
 
