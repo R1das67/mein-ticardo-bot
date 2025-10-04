@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 import asyncio
 import os
+from discord import AllowedMentions
 
 # ================= BOT SETUP =================
 intents = discord.Intents.default()
@@ -103,7 +104,14 @@ class TicketOpenPersistentView(discord.ui.View):
         )
 
         view = TicketClosePersistentView()
-        await channel.send(embeds=[embed1, embed2], view=view)
+        allowed = discord.AllowedMentions(users=True, roles=True)
+        
+        await channel.send(
+            embeds=[embed1, embed2],
+            view=view,
+            allowed_mentions=allowed
+        )
+
         await interaction.response.send_message(f"✅ Ticket erstellt: {channel.mention}", ephemeral=True)
 
 class TicketClosePersistentView(discord.ui.View):
