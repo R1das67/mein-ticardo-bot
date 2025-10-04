@@ -4,27 +4,26 @@ from discord import app_commands
 import asyncio
 import os
 
-# BOT SETUP
+# ================= BOT SETUP =================
 intents = discord.Intents.default()
 intents.guilds = True
 intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# STORAGE (kann später mit einer DB ersetzt werden)
+# ================= STORAGE =================
 ticket_category_id = None
 ticket_mod_role_id = None
 ticket_count = 0
 
-# ============ COMMANDS ============
-
+# ================= COMMANDS =================
 @bot.event
 async def on_ready():
     print(f"✅ Bot online als {bot.user}")
 
-    # Persistent Views registrieren, damit Buttons nach Neustart funktionieren
-    bot.add_view(TicketOpenPersistentView())   # Ticket erstellen Button
-    bot.add_view(TicketCloseView())            # Ticket schließen Buttons
+    # Persistent Views registrieren
+    bot.add_view(TicketOpenPersistentView())    # Ticket erstellen Button
+    bot.add_view(TicketClosePersistentView())   # Ticket schließen Buttons
 
     await bot.tree.sync()
     print(f"Slash Commands synchronisiert")
@@ -53,14 +52,11 @@ async def ticket_starten(interaction: discord.Interaction):
     )
     view = TicketOpenPersistentView()
 
-    # Normale Nachricht vom Bot in den Kanal, kein Antwortsymbol
+    # Normale Nachricht im Kanal, kein Antwortsymbol
     await interaction.channel.send(embed=embed, view=view)
-
-    # Optional noch eine kurze Bestätigung ephemer
     await interaction.response.send_message("✅ Ticket-Nachricht wurde gesendet.", ephemeral=True)
 
-# ============ BUTTONS ============
-
+# ================= BUTTON VIEWS =================
 class TicketOpenPersistentView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -96,7 +92,7 @@ class TicketOpenPersistentView(discord.ui.View):
             overwrites=overwrites
         )
 
-        # Embed im Ticket
+        # Embeds im Ticket
         embed1 = discord.Embed(
             description=f"<@&{ticket_mod_role_id}>" if ticket_mod_role_id else "",
             color=discord.Color.orange()
@@ -143,6 +139,5 @@ class ConfirmNoButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.send_message("❌ Ticket bleibt geöffnet.", ephemeral=True)
 
-# ============ START ============
-
+# ================= START BOT =================
 bot.run(os.getenv("DISCORD_TOKEN"))
