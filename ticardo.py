@@ -48,15 +48,17 @@ async def set_ticket_mod(interaction: discord.Interaction, role_id: str):
 # /ticket-starten
 @bot.tree.command(name="ticket-starten", description="Erstellt den Ticket Button")
 async def ticket_starten(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)  # Interaction sofort ack, verhindert "Die Anwendung reagiert nicht"
+
     embed = discord.Embed(
         title="📨 Support Ticket",
         description="Bitte erstelle ein Ticket um deine Angelegenheiten mit dem Support zu besprechen.",
         color=discord.Color.orange()
     )
     view = TicketOpenPersistentView()
-    # Bot-Nachricht ohne "Antwortsymbol" senden
+
+    # Normale Nachricht vom Bot in den Kanal, kein Antwortsymbol
     await interaction.channel.send(embed=embed, view=view)
-    await interaction.response.defer(ephemeral=True)
 
 # ============ BUTTONS ============
 
@@ -150,7 +152,6 @@ class ConfirmNoButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.send_message("❌ Ticket bleibt geöffnet.", ephemeral=True)
-
 
 # ============ START ============
 
