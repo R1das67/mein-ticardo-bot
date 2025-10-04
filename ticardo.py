@@ -93,33 +93,25 @@ class TicketOpenPersistentView(discord.ui.View):
             overwrites=overwrites
         )
 
-        # Embeds im Ticket
-        channel = await guild.create_text_channel(
-            name=f"ticardo-ticket-{ticket_count}",
-            category=category,
-            overwrites=overwrites
+        # Normale Nachricht mit Pings
+        ping_text = ""
+        if ticket_mod_role_id:
+            ping_text += f"<@&{ticket_mod_role_id}> "
+        ping_text += f"<@{interaction.user.id}>"
+
+        await channel.send(ping_text)
+
+        # Embed mit Info für User
+        embed = discord.Embed(
+            description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
+            color=discord.Color.orange()
         )
 
-# Normale Nachricht mit Pings
-ping_text = ""
-if ticket_mod_role_id:
-    ping_text += f"<@&{ticket_mod_role_id}> "
-ping_text += f"<@{interaction.user.id}>"
+        view = TicketClosePersistentView()
+        await channel.send(embed=embed, view=view)
 
-await channel.send(ping_text)
-
-# Embed mit Info für User
-embed = discord.Embed(
-    description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-    color=discord.Color.orange()
-)
-
-view = TicketClosePersistentView()
-
-await channel.send(embed=embed, view=view)
-
-# Ephemer als Rückmeldung für User, der den Button gedrückt hat
-await interaction.response.send_message(f"✅ Ticket erstellt: {channel.mention}", ephemeral=True)
+        # Ephemer als Rückmeldung für User, der den Button gedrückt hat
+        await interaction.response.send_message(f"✅ Ticket erstellt: {channel.mention}", ephemeral=True)
 
 class TicketClosePersistentView(discord.ui.View):
     def __init__(self):
@@ -156,4 +148,3 @@ class ConfirmNoButton(discord.ui.Button):
 
 # ================= START BOT =================
 bot.run(os.getenv("DISCORD_TOKEN"))
-
