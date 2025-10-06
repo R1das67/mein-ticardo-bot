@@ -17,6 +17,11 @@ ticket_category_id = None
 ticket_mod_role_id = None
 ticket_count = 0
 
+# ================= ADMIN CHECK =================
+def is_admin(interaction: discord.Interaction) -> bool:
+    """Prüft, ob der Benutzer Administratorrechte hat."""
+    return interaction.user.guild_permissions.administrator
+
 # ================= COMMANDS =================
 @bot.event
 async def on_ready():
@@ -31,6 +36,7 @@ async def on_ready():
 
 # /create-ticket-in
 @bot.tree.command(name="create-ticket-in", description="Setze die Kategorie für Tickets")
+@app_commands.check(is_admin)
 async def create_ticket_in(interaction: discord.Interaction, category_id: str):
     global ticket_category_id
     ticket_category_id = int(category_id)
@@ -38,6 +44,7 @@ async def create_ticket_in(interaction: discord.Interaction, category_id: str):
 
 # /set-ticket-mod
 @bot.tree.command(name="set-ticket-mod", description="Setze die Ticket-Mod Rolle")
+@app_commands.check(is_admin)
 async def set_ticket_mod(interaction: discord.Interaction, role_id: str):
     global ticket_mod_role_id
     ticket_mod_role_id = int(role_id)
@@ -45,17 +52,26 @@ async def set_ticket_mod(interaction: discord.Interaction, role_id: str):
 
 # /ticket-starten
 @bot.tree.command(name="ticket-starten", description="Erstellt den Ticket Button")
+@app_commands.check(is_admin)
 async def ticket_starten(interaction: discord.Interaction):
     embed = discord.Embed(
         title="📨 Support Ticket",
-        description="Bitte erstelle ein Ticket um deine Angelegenheiten mit dem Support zu besprechen.",
-         color=discord.Color(0x3EB489)
+        description="Bitte erstelle ein Ticket, um deine Angelegenheiten mit dem Support zu besprechen.",
+        color=discord.Color(0x3EB489)
     )
     view = TicketOpenPersistentView()
 
     # Normale Nachricht im Kanal, kein Antwortsymbol
     await interaction.channel.send(embed=embed, view=view)
     await interaction.response.send_message("✅ Ticket-Nachricht wurde gesendet.", ephemeral=True)
+
+# ================= ERROR HANDLER =================
+@create_ticket_in.error
+@set_ticket_mod.error
+@ticket_starten.error
+async def admin_error(interaction: discord.Interaction, error):
+    if isinstance(error, app_commands.CheckFailure):
+        await interaction.response.send_message("❌ Du hast keine Administratorrechte, um diesen Befehl zu nutzen.", ephemeral=True)
 
 # ================= BUTTON VIEWS =================
 class TicketOpenPersistentView(discord.ui.View):
@@ -104,7 +120,7 @@ class TicketOpenPersistentView(discord.ui.View):
         # Embed mit Info für User
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-             color=discord.Color(0x3EB489)
+            color=discord.Color(0x3EB489)
         )
 
         view = TicketClosePersistentView()
