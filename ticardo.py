@@ -94,7 +94,7 @@ class WizardFinishView(discord.ui.View):
         super().__init__(timeout=None)
         self.panel_key = panel_key
 
-    @discord.ui.button(label="✅ Yes", style=discord.ButtonStyle.success)
+    @discord.ui.button(label="✅ Yes", style=discord.ButtonStyle.success, custom_id="wizard_yes")
     async def yes_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         panel = panels[self.panel_key]
         embed = discord.Embed(
@@ -107,7 +107,7 @@ class WizardFinishView(discord.ui.View):
         await channel.send(embed=embed, view=view)
         await interaction.response.send_message(f"✅ Panel {self.panel_key} erstellt!", ephemeral=True)
 
-    @discord.ui.button(label="❌ No", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="❌ No", style=discord.ButtonStyle.danger, custom_id="wizard_no")
     async def no_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("Wizard wird neu gestartet...", view=GoBackButtonView(panel_key=self.panel_key), ephemeral=True)
 
@@ -117,7 +117,7 @@ class GoBackButtonView(discord.ui.View):
         super().__init__(timeout=None)
         self.panel_key = panel_key
 
-    @discord.ui.button(label="🔄 Go Back", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="🔄 Go Back", style=discord.ButtonStyle.secondary, custom_id="wizard_goback")
     async def go_back(self, interaction: discord.Interaction, button: discord.ui.Button):
         await start_panel_wizard(interaction, self.panel_key)
 
