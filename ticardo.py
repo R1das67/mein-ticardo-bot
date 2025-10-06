@@ -24,6 +24,8 @@ def is_admin(interaction: discord.Interaction) -> bool:
     return interaction.user.guild_permissions.administrator
 
 # ================= COMMANDS =================
+GUILD_ID = 1424384847169847338
+
 @bot.event
 async def on_ready():
     print(f"✅ Bot online als {bot.user}")
@@ -34,8 +36,10 @@ async def on_ready():
     bot.add_view(WizardFinishView())            # Wizard Finish Buttons
     bot.add_view(GoBackButtonView())            # Go Back Button
 
-    await bot.tree.sync()
-    print(f"Slash Commands synchronisiert")
+    # Nur für deinen Server synchronisieren (Guild Commands)
+    guild = discord.Object(id=GUILD_ID)
+    await bot.tree.sync(guild=guild)
+    print(f"Slash Commands für Server {GUILD_ID} synchronisiert")
 
 # ================= PANEL EDIT COMMANDS =================
 @bot.tree.command(name="edit-panel-1", description="Wizard für Panel 1")
