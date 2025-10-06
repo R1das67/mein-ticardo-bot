@@ -49,7 +49,7 @@ async def ticket_starten(interaction: discord.Interaction):
     embed = discord.Embed(
         title="📨 Support Ticket",
         description="Bitte erstelle ein Ticket um deine Angelegenheiten mit dem Support zu besprechen.",
-        color=discord.Color.orange()
+         color=discord.Color(0x3EB489)
     )
     view = TicketOpenPersistentView()
 
@@ -104,7 +104,7 @@ class TicketOpenPersistentView(discord.ui.View):
         # Embed mit Info für User
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=discord.Color.orange()
+             color=discord.Color(0x3EB489)
         )
 
         view = TicketClosePersistentView()
