@@ -67,7 +67,7 @@ async def ticket_starten(interaction: discord.Interaction):
     embed = discord.Embed(
         title="📨 Support Ticket",
         description="Bitte erstelle ein Ticket, um deine Angelegenheiten mit dem Support zu besprechen.",
-        color=discord.Color(0x3EB489)
+        color=discord.Color(0x68AEDD)
     )
     view = TicketOpenPersistentView()
     await interaction.channel.send(embed=embed, view=view)
@@ -113,7 +113,7 @@ async def ticket_starten_2(interaction: discord.Interaction):
     embed = discord.Embed(
         title=embed_title_2,
         description=embed_text_2,
-        color=discord.Color(0x3EB489)
+        color=discord.Color(0x68AEDD)
     )
     view = TicketOpenPersistentView2()
     await interaction.channel.send(embed=embed, view=view)
@@ -177,7 +177,7 @@ class TicketOpenPersistentView(discord.ui.View):
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=discord.Color(0x3EB489)
+            color=discord.Color(0x68AEDD)
         )
         view = TicketClosePersistentView()
         await channel.send(embed=embed, view=view)
