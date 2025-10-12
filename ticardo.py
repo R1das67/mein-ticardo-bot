@@ -37,7 +37,7 @@ def is_admin(interaction: discord.Interaction) -> bool:
     return interaction.user.guild_permissions.administrator
 
 # ================= EMBED FARBE =================
-LAVENDER_PURPLE = discord.Color.from_rgb(150, 123, 182)
+DUNKEL_ARCTIC_PURPLE = discord.Color.from_rgb(75, 0, 130)  # neue Farbe
 
 # ================= COMMANDS =================
 @bot.event
@@ -76,7 +76,7 @@ async def ticket_starten(interaction: discord.Interaction):
     embed = discord.Embed(
         title="📨 Support Ticket",
         description="Bitte erstelle ein Ticket, um deine Angelegenheiten mit dem Support zu besprechen.",
-        color=LAVENDER_PURPLE
+        color=DUNKEL_ARCTIC_PURPLE
     )
     view = TicketOpenPersistentView()
     await interaction.channel.send(embed=embed, view=view)
@@ -117,7 +117,7 @@ async def ticket_starten_2(interaction: discord.Interaction):
     embed = discord.Embed(
         title=embed_title_2,
         description=embed_text_2,
-        color=LAVENDER_PURPLE
+        color=DUNKEL_ARCTIC_PURPLE
     )
     view = TicketOpenPersistentView2()
     await interaction.channel.send(embed=embed, view=view)
@@ -158,7 +158,7 @@ async def ticket_starten_3(interaction: discord.Interaction):
     embed = discord.Embed(
         title=embed_title_3,
         description=embed_text_3,
-        color=LAVENDER_PURPLE
+        color=DUNKEL_ARCTIC_PURPLE
     )
     view = TicketOpenPersistentView3()
     await interaction.channel.send(embed=embed, view=view)
@@ -227,7 +227,7 @@ class TicketOpenPersistentView(discord.ui.View):
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=LAVENDER_PURPLE
+            color=DUNKEL_ARCTIC_PURPLE
         )
         view = TicketClosePersistentView()
         await channel.send(embed=embed, view=view)
@@ -287,7 +287,7 @@ class TicketOpenPersistentView2(discord.ui.View):
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=LAVENDER_PURPLE
+            color=DUNKEL_ARCTIC_PURPLE
         )
         view = TicketClosePersistentView2()
         await channel.send(embed=embed, view=view)
@@ -347,7 +347,7 @@ class TicketOpenPersistentView3(discord.ui.View):
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=LAVENDER_PURPLE
+            color=DUNKEL_ARCTIC_PURPLE
         )
         view = TicketClosePersistentView3()
         await channel.send(embed=embed, view=view)
