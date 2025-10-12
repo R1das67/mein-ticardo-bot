@@ -37,7 +37,7 @@ def is_admin(interaction: discord.Interaction) -> bool:
     return interaction.user.guild_permissions.administrator
 
 # ================= EMBED FARBE =================
-DUNKEL_ARCTIC_PURPLE = discord.Color.from_rgb(75, 0, 130)  # neue Farbe
+DUNKEL_ARCTIC_BLUE = discord.Color.from_rgb(0, 100, 200)  # neue Farbe
 
 # ================= COMMANDS =================
 @bot.event
@@ -76,7 +76,7 @@ async def ticket_starten(interaction: discord.Interaction):
     embed = discord.Embed(
         title="📨 Support Ticket",
         description="Bitte erstelle ein Ticket, um deine Angelegenheiten mit dem Support zu besprechen.",
-        color=DUNKEL_ARCTIC_PURPLE
+        color=DUNKEL_ARCTIC_BLUE
     )
     view = TicketOpenPersistentView()
     await interaction.channel.send(embed=embed, view=view)
@@ -117,7 +117,7 @@ async def ticket_starten_2(interaction: discord.Interaction):
     embed = discord.Embed(
         title=embed_title_2,
         description=embed_text_2,
-        color=DUNKEL_ARCTIC_PURPLE
+        color=DUNKEL_ARCTIC_BLUE
     )
     view = TicketOpenPersistentView2()
     await interaction.channel.send(embed=embed, view=view)
@@ -158,7 +158,7 @@ async def ticket_starten_3(interaction: discord.Interaction):
     embed = discord.Embed(
         title=embed_title_3,
         description=embed_text_3,
-        color=DUNKEL_ARCTIC_PURPLE
+        color=DUNKEL_ARCTIC_BLUE
     )
     view = TicketOpenPersistentView3()
     await interaction.channel.send(embed=embed, view=view)
@@ -227,7 +227,7 @@ class TicketOpenPersistentView(discord.ui.View):
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=DUNKEL_ARCTIC_PURPLE
+            color=DUNKEL_ARCTIC_BLUE
         )
         view = TicketClosePersistentView()
         await channel.send(embed=embed, view=view)
@@ -248,18 +248,18 @@ class TicketOpenPersistentView2(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="📨 Ticket erstellen (Panel 2)", style=discord.ButtonStyle.primary, custom_id="ticket_open_2")
+    @discord.ui.button(label="📨 Ticket erstellen", style=discord.ButtonStyle.primary, custom_id="ticket_open_2")
     async def ticket_open_button_2(self, interaction: discord.Interaction, button: discord.ui.Button):
         global ticket_count_2, ticket_category_id_2, ticket_mod_role_id_2
         if ticket_category_id_2 is None:
-            await interaction.response.send_message("❌ Es wurde keine Ticket-Kategorie (Panel 2) gesetzt!", ephemeral=True)
+            await interaction.response.send_message("❌ Es wurde keine Ticket-Kategorie gesetzt!", ephemeral=True)
             return
 
         ticket_count_2 += 1
         guild = interaction.guild
         category = guild.get_channel(ticket_category_id_2)
         if category is None:
-            await interaction.response.send_message("❌ Die angegebene Kategorie (Panel 2) existiert nicht oder ist ungültig.", ephemeral=True)
+            await interaction.response.send_message("❌ Die angegebene Kategorie existiert nicht oder ist ungültig.", ephemeral=True)
             return
 
         overwrites = {
@@ -287,18 +287,18 @@ class TicketOpenPersistentView2(discord.ui.View):
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=DUNKEL_ARCTIC_PURPLE
+            color=DUNKEL_ARCTIC_BLUE
         )
         view = TicketClosePersistentView2()
         await channel.send(embed=embed, view=view)
 
-        await interaction.response.send_message(f"✅ Ticket erstellt (Panel 2): {channel.mention}", ephemeral=True)
+        await interaction.response.send_message(f"✅ Ticket erstellt: {channel.mention}", ephemeral=True)
 
 class TicketClosePersistentView2(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="❌ Ticket schließen (Panel 2)", style=discord.ButtonStyle.danger, custom_id="ticket_close_2")
+    @discord.ui.button(label="❌ Ticket schließen", style=discord.ButtonStyle.danger, custom_id="ticket_close_2")
     async def ticket_close_button_2(self, interaction: discord.Interaction, button: discord.ui.Button):
         view = ConfirmCloseView(interaction.channel)
         await interaction.response.send_message("Möchten Sie das Ticket wirklich schließen?", view=view, ephemeral=True)
@@ -308,18 +308,18 @@ class TicketOpenPersistentView3(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="📨 Ticket erstellen (Panel 3)", style=discord.ButtonStyle.primary, custom_id="ticket_open_3")
+    @discord.ui.button(label="📨 Ticket erstellen", style=discord.ButtonStyle.primary, custom_id="ticket_open_3")
     async def ticket_open_button_3(self, interaction: discord.Interaction, button: discord.ui.Button):
         global ticket_count_3, ticket_category_id_3, ticket_mod_role_id_3
         if ticket_category_id_3 is None:
-            await interaction.response.send_message("❌ Es wurde keine Ticket-Kategorie (Panel 3) gesetzt!", ephemeral=True)
+            await interaction.response.send_message("❌ Es wurde keine Ticket-Kategorie gesetzt!", ephemeral=True)
             return
 
         ticket_count_3 += 1
         guild = interaction.guild
         category = guild.get_channel(ticket_category_id_3)
         if category is None:
-            await interaction.response.send_message("❌ Die angegebene Kategorie (Panel 3) existiert nicht oder ist ungültig.", ephemeral=True)
+            await interaction.response.send_message("❌ Die angegebene Kategorie existiert nicht oder ist ungültig.", ephemeral=True)
             return
 
         overwrites = {
@@ -347,18 +347,18 @@ class TicketOpenPersistentView3(discord.ui.View):
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=DUNKEL_ARCTIC_PURPLE
+            color=DUNKEL_ARCTIC_BLUE
         )
         view = TicketClosePersistentView3()
         await channel.send(embed=embed, view=view)
 
-        await interaction.response.send_message(f"✅ Ticket erstellt (Panel 3): {channel.mention}", ephemeral=True)
+        await interaction.response.send_message(f"✅ Ticket erstellt: {channel.mention}", ephemeral=True)
 
 class TicketClosePersistentView3(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="❌ Ticket schließen (Panel 3)", style=discord.ButtonStyle.danger, custom_id="ticket_close_3")
+    @discord.ui.button(label="❌ Ticket schließen", style=discord.ButtonStyle.danger, custom_id="ticket_close_3")
     async def ticket_close_button_3(self, interaction: discord.Interaction, button: discord.ui.Button):
         view = ConfirmCloseView(interaction.channel)
         await interaction.response.send_message("Möchten Sie das Ticket wirklich schließen?", view=view, ephemeral=True)
