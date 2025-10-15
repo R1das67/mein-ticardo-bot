@@ -9,8 +9,9 @@ from discord import AllowedMentions
 intents = discord.Intents.default()
 intents.guilds = True
 intents.members = True
+intents.message_content = True
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="$", intents=intents)
 
 # ================= STORAGE PANEL 1 =================
 ticket_category_id = None
@@ -37,7 +38,7 @@ def is_admin(interaction: discord.Interaction) -> bool:
     return interaction.user.guild_permissions.administrator
 
 # ================= EMBED FARBE =================
-DUNKEL_ARCTIC_BLUE = discord.Color.from_rgb(0, 100, 200)  # neue Farbe
+WEISS = discord.Color.from_rgb(58, 134, 255)  # Arctic Blue (dunkel)
 
 # ================= COMMANDS =================
 @bot.event
@@ -45,12 +46,12 @@ async def on_ready():
     print(f"✅ Bot online als {bot.user}")
 
     # Persistent Views registrieren
-    bot.add_view(TicketOpenPersistentView())      # Panel 1: Ticket erstellen Button
-    bot.add_view(TicketClosePersistentView())     # Panel 1: Ticket schließen Buttons
-    bot.add_view(TicketOpenPersistentView2())     # Panel 2: Ticket erstellen Button
-    bot.add_view(TicketClosePersistentView2())    # Panel 2: Ticket schließen Buttons
-    bot.add_view(TicketOpenPersistentView3())     # Panel 3: Ticket erstellen Button
-    bot.add_view(TicketClosePersistentView3())    # Panel 3: Ticket schließen Buttons
+    bot.add_view(TicketOpenPersistentView())      
+    bot.add_view(TicketClosePersistentView())     
+    bot.add_view(TicketOpenPersistentView2())     
+    bot.add_view(TicketClosePersistentView2())    
+    bot.add_view(TicketOpenPersistentView3())     
+    bot.add_view(TicketClosePersistentView3())    
 
     await bot.tree.sync()
     print(f"Slash Commands synchronisiert")
@@ -76,7 +77,7 @@ async def ticket_starten(interaction: discord.Interaction):
     embed = discord.Embed(
         title="📨 Support Ticket",
         description="Bitte erstelle ein Ticket, um deine Angelegenheiten mit dem Support zu besprechen.",
-        color=DUNKEL_ARCTIC_BLUE
+        color=WEISS
     )
     view = TicketOpenPersistentView()
     await interaction.channel.send(embed=embed, view=view)
@@ -117,7 +118,7 @@ async def ticket_starten_2(interaction: discord.Interaction):
     embed = discord.Embed(
         title=embed_title_2,
         description=embed_text_2,
-        color=DUNKEL_ARCTIC_BLUE
+        color=WEISS
     )
     view = TicketOpenPersistentView2()
     await interaction.channel.send(embed=embed, view=view)
@@ -158,7 +159,7 @@ async def ticket_starten_3(interaction: discord.Interaction):
     embed = discord.Embed(
         title=embed_title_3,
         description=embed_text_3,
-        color=DUNKEL_ARCTIC_BLUE
+        color=WEISS
     )
     view = TicketOpenPersistentView3()
     await interaction.channel.send(embed=embed, view=view)
@@ -182,6 +183,18 @@ async def admin_error(interaction: discord.Interaction, error):
     if isinstance(error, app_commands.CheckFailure):
         await interaction.response.send_message("❌ Du hast keine Administratorrechte, um diesen Befehl zu nutzen.", ephemeral=True)
 
+# ================= HELPER FUNKTION =================
+async def user_has_open_ticket(guild, user, category_id):
+    """Überprüft, ob der Nutzer bereits ein Ticket in der Kategorie hat."""
+    category = guild.get_channel(category_id)
+    if not category:
+        return False
+    for channel in category.text_channels:
+        if channel.permissions_for(user).view_channel:
+            if str(user.id) in [str(o.id) for o in channel.overwrites if isinstance(o, discord.Member)]:
+                return True
+    return False
+
 # ================= BUTTON VIEWS =================
 # PANEL 1
 class TicketOpenPersistentView(discord.ui.View):
@@ -193,6 +206,11 @@ class TicketOpenPersistentView(discord.ui.View):
         global ticket_count, ticket_category_id, ticket_mod_role_id
         if ticket_category_id is None:
             await interaction.response.send_message("❌ Es wurde keine Ticket-Kategorie gesetzt!", ephemeral=True)
+            return
+        
+        # Prüfen, ob der Nutzer schon ein Ticket hat
+        if await user_has_open_ticket(interaction.guild, interaction.user, ticket_category_id):
+            await interaction.response.send_message("⚠️ Du hast bereits ein offenes Ticket in diesem Panel.", ephemeral=True)
             return
 
         ticket_count += 1
@@ -213,7 +231,7 @@ class TicketOpenPersistentView(discord.ui.View):
                 overwrites[mod_role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
 
         channel = await guild.create_text_channel(
-            name=f"ticardo-ticket-{ticket_count}",
+            name=f"ep-ticket-{ticket_count}",
             category=category,
             overwrites=overwrites
         )
@@ -227,11 +245,10 @@ class TicketOpenPersistentView(discord.ui.View):
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=DUNKEL_ARCTIC_BLUE
+            color=WEISS
         )
         view = TicketClosePersistentView()
         await channel.send(embed=embed, view=view)
-
         await interaction.response.send_message(f"✅ Ticket erstellt: {channel.mention}", ephemeral=True)
 
 class TicketClosePersistentView(discord.ui.View):
@@ -241,7 +258,7 @@ class TicketClosePersistentView(discord.ui.View):
     @discord.ui.button(label="❌ Ticket schließen", style=discord.ButtonStyle.danger, custom_id="ticket_close")
     async def ticket_close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         view = ConfirmCloseView(interaction.channel)
-        await interaction.response.send_message("Möchten Sie das Ticket wirklich schließen?", view=view, ephemeral=True)
+        await interaction.response.send_message("Möchtest du das Ticket wirklich schließen?", view=view, ephemeral=True)
 
 # PANEL 2
 class TicketOpenPersistentView2(discord.ui.View):
@@ -253,6 +270,11 @@ class TicketOpenPersistentView2(discord.ui.View):
         global ticket_count_2, ticket_category_id_2, ticket_mod_role_id_2
         if ticket_category_id_2 is None:
             await interaction.response.send_message("❌ Es wurde keine Ticket-Kategorie gesetzt!", ephemeral=True)
+            return
+        
+        # Prüfen, ob der Nutzer schon ein Ticket hat
+        if await user_has_open_ticket(interaction.guild, interaction.user, ticket_category_id_2):
+            await interaction.response.send_message("⚠️ Du hast bereits ein offenes Ticket in diesem Panel.", ephemeral=True)
             return
 
         ticket_count_2 += 1
@@ -273,7 +295,7 @@ class TicketOpenPersistentView2(discord.ui.View):
                 overwrites[mod_role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
 
         channel = await guild.create_text_channel(
-            name=f"ticardo2-ticket-{ticket_count_2}",
+            name=f"ep-ticket-{ticket_count_2}",
             category=category,
             overwrites=overwrites
         )
@@ -287,11 +309,10 @@ class TicketOpenPersistentView2(discord.ui.View):
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=DUNKEL_ARCTIC_BLUE
+            color=WEISS
         )
         view = TicketClosePersistentView2()
         await channel.send(embed=embed, view=view)
-
         await interaction.response.send_message(f"✅ Ticket erstellt: {channel.mention}", ephemeral=True)
 
 class TicketClosePersistentView2(discord.ui.View):
@@ -301,7 +322,7 @@ class TicketClosePersistentView2(discord.ui.View):
     @discord.ui.button(label="❌ Ticket schließen", style=discord.ButtonStyle.danger, custom_id="ticket_close_2")
     async def ticket_close_button_2(self, interaction: discord.Interaction, button: discord.ui.Button):
         view = ConfirmCloseView(interaction.channel)
-        await interaction.response.send_message("Möchten Sie das Ticket wirklich schließen?", view=view, ephemeral=True)
+        await interaction.response.send_message("Möchtest du das Ticket wirklich schließen?", view=view, ephemeral=True)
 
 # PANEL 3
 class TicketOpenPersistentView3(discord.ui.View):
@@ -313,6 +334,11 @@ class TicketOpenPersistentView3(discord.ui.View):
         global ticket_count_3, ticket_category_id_3, ticket_mod_role_id_3
         if ticket_category_id_3 is None:
             await interaction.response.send_message("❌ Es wurde keine Ticket-Kategorie gesetzt!", ephemeral=True)
+            return
+        
+        # Prüfen, ob der Nutzer schon ein Ticket hat
+        if await user_has_open_ticket(interaction.guild, interaction.user, ticket_category_id_3):
+            await interaction.response.send_message("⚠️ Du hast bereits ein offenes Ticket in diesem Panel.", ephemeral=True)
             return
 
         ticket_count_3 += 1
@@ -333,7 +359,7 @@ class TicketOpenPersistentView3(discord.ui.View):
                 overwrites[mod_role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
 
         channel = await guild.create_text_channel(
-            name=f"ticardo3-ticket-{ticket_count_3}",
+            name=f"ep-ticket-{ticket_count_3}",
             category=category,
             overwrites=overwrites
         )
@@ -347,11 +373,10 @@ class TicketOpenPersistentView3(discord.ui.View):
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
-            color=DUNKEL_ARCTIC_BLUE
+            color=WEISS
         )
         view = TicketClosePersistentView3()
         await channel.send(embed=embed, view=view)
-
         await interaction.response.send_message(f"✅ Ticket erstellt: {channel.mention}", ephemeral=True)
 
 class TicketClosePersistentView3(discord.ui.View):
@@ -361,9 +386,9 @@ class TicketClosePersistentView3(discord.ui.View):
     @discord.ui.button(label="❌ Ticket schließen", style=discord.ButtonStyle.danger, custom_id="ticket_close_3")
     async def ticket_close_button_3(self, interaction: discord.Interaction, button: discord.ui.Button):
         view = ConfirmCloseView(interaction.channel)
-        await interaction.response.send_message("Möchten Sie das Ticket wirklich schließen?", view=view, ephemeral=True)
+        await interaction.response.send_message("Möchtest du das Ticket wirklich schließen?", view=view, ephemeral=True)
 
-# ================= CONFIRM CLOSE (beide Panels) =================
+# ================= CONFIRM CLOSE =================
 class ConfirmCloseView(discord.ui.View):
     def __init__(self, channel):
         super().__init__(timeout=30)
@@ -387,6 +412,21 @@ class ConfirmNoButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.send_message("❌ Ticket bleibt geöffnet.", ephemeral=True)
+
+# =================== $close COMMAND ===================
+@bot.command(name="close")
+async def close_ticket(ctx):
+    """Schließt ein Ticket über den Textbefehl $close (egal welches Panel)."""
+    if isinstance(ctx.channel, discord.TextChannel):
+        # Prüfen, ob es ein Ticket-Channel ist
+        if ctx.channel.name.lower().startswith(("ep-ticket-")):
+            await ctx.send("✅ Ticket wird geschlossen...")
+            await asyncio.sleep(2)
+            await ctx.channel.delete()
+        else:
+            await ctx.send("❌ Dieser Befehl kann nur in einem Ticket-Channel verwendet werden.")
+    else:
+        await ctx.send("❌ Dieser Befehl kann nur in einem Textkanal verwendet werden.")
 
 # ================= START BOT =================
 bot.run(os.getenv("DISCORD_TOKEN"))
