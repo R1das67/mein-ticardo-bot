@@ -38,7 +38,7 @@ def is_admin(interaction: discord.Interaction) -> bool:
     return interaction.user.guild_permissions.administrator
 
 # ================= EMBED FARBE =================
-WEISS = discord.Color.from_rgb(58, 134, 255)  # Arctic Blue (dunkel)
+WEISS = discord.Color.from_rgb(255, 255, 255)  # Weiß
 
 # ================= COMMANDS =================
 @bot.event
@@ -231,7 +231,7 @@ class TicketOpenPersistentView(discord.ui.View):
                 overwrites[mod_role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
 
         channel = await guild.create_text_channel(
-            name=f"ep-ticket-{ticket_count}",
+            name=f"cm-ticket-{ticket_count}",
             category=category,
             overwrites=overwrites
         )
@@ -295,7 +295,7 @@ class TicketOpenPersistentView2(discord.ui.View):
                 overwrites[mod_role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
 
         channel = await guild.create_text_channel(
-            name=f"ep-ticket-{ticket_count_2}",
+            name=f"cm-ticket-{ticket_count_2}",
             category=category,
             overwrites=overwrites
         )
@@ -359,7 +359,7 @@ class TicketOpenPersistentView3(discord.ui.View):
                 overwrites[mod_role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
 
         channel = await guild.create_text_channel(
-            name=f"ep-ticket-{ticket_count_3}",
+            name=f"cm-ticket-{ticket_count_3}",
             category=category,
             overwrites=overwrites
         )
@@ -419,7 +419,7 @@ async def close_ticket(ctx):
     """Schließt ein Ticket über den Textbefehl $close (egal welches Panel)."""
     if isinstance(ctx.channel, discord.TextChannel):
         # Prüfen, ob es ein Ticket-Channel ist
-        if ctx.channel.name.lower().startswith(("ep-ticket-")):
+        if ctx.channel.name.lower().startswith(("cm-ticket-")):
             await ctx.send("✅ Ticket wird geschlossen...")
             await asyncio.sleep(2)
             await ctx.channel.delete()
