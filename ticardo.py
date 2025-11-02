@@ -203,12 +203,11 @@ class TicketOpenPersistentView(discord.ui.View):
 
     @discord.ui.button(label="📨 Ticket erstellen", style=discord.ButtonStyle.primary, custom_id="ticket_open")
     async def ticket_open_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global ticket_count, ticket_category_id, ticket_mod_role_id
+        global ticket_count, ticket_category_id
         if ticket_category_id is None:
             await interaction.response.send_message("❌ Es wurde keine Ticket-Kategorie gesetzt!", ephemeral=True)
             return
         
-        # Prüfen, ob der Nutzer schon ein Ticket hat
         if await user_has_open_ticket(interaction.guild, interaction.user, ticket_category_id):
             await interaction.response.send_message("⚠️ Du hast bereits ein offenes Ticket in diesem Panel.", ephemeral=True)
             return
@@ -225,23 +224,13 @@ class TicketOpenPersistentView(discord.ui.View):
             interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True),
         }
 
-        if ticket_mod_role_id:
-            mod_role = guild.get_role(ticket_mod_role_id)
-            if mod_role:
-                overwrites[mod_role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
-
         channel = await guild.create_text_channel(
-            name=f"cm-ticket-{ticket_count}",
+            name=f"haps-ticket-{ticket_count}",
             category=category,
             overwrites=overwrites
         )
 
-        ping_text = ""
-        if ticket_mod_role_id:
-            ping_text += f"<@&{ticket_mod_role_id}> "
-        ping_text += f"<@{interaction.user.id}>"
-
-        await channel.send(ping_text)
+        await channel.send(f"<@{interaction.user.id}>")
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
@@ -267,12 +256,11 @@ class TicketOpenPersistentView2(discord.ui.View):
 
     @discord.ui.button(label="📨 Ticket erstellen", style=discord.ButtonStyle.primary, custom_id="ticket_open_2")
     async def ticket_open_button_2(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global ticket_count_2, ticket_category_id_2, ticket_mod_role_id_2
+        global ticket_count_2, ticket_category_id_2
         if ticket_category_id_2 is None:
             await interaction.response.send_message("❌ Es wurde keine Ticket-Kategorie gesetzt!", ephemeral=True)
             return
         
-        # Prüfen, ob der Nutzer schon ein Ticket hat
         if await user_has_open_ticket(interaction.guild, interaction.user, ticket_category_id_2):
             await interaction.response.send_message("⚠️ Du hast bereits ein offenes Ticket in diesem Panel.", ephemeral=True)
             return
@@ -289,23 +277,13 @@ class TicketOpenPersistentView2(discord.ui.View):
             interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True),
         }
 
-        if ticket_mod_role_id_2:
-            mod_role = guild.get_role(ticket_mod_role_id_2)
-            if mod_role:
-                overwrites[mod_role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
-
         channel = await guild.create_text_channel(
-            name=f"cm-ticket-{ticket_count_2}",
+            name=f"haps-ticket-{ticket_count_2}",
             category=category,
             overwrites=overwrites
         )
 
-        ping_text = ""
-        if ticket_mod_role_id_2:
-            ping_text += f"<@&{ticket_mod_role_id_2}> "
-        ping_text += f"<@{interaction.user.id}>"
-
-        await channel.send(ping_text)
+        await channel.send(f"<@{interaction.user.id}>")
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
@@ -331,12 +309,11 @@ class TicketOpenPersistentView3(discord.ui.View):
 
     @discord.ui.button(label="📨 Ticket erstellen", style=discord.ButtonStyle.primary, custom_id="ticket_open_3")
     async def ticket_open_button_3(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global ticket_count_3, ticket_category_id_3, ticket_mod_role_id_3
+        global ticket_count_3, ticket_category_id_3
         if ticket_category_id_3 is None:
             await interaction.response.send_message("❌ Es wurde keine Ticket-Kategorie gesetzt!", ephemeral=True)
             return
         
-        # Prüfen, ob der Nutzer schon ein Ticket hat
         if await user_has_open_ticket(interaction.guild, interaction.user, ticket_category_id_3):
             await interaction.response.send_message("⚠️ Du hast bereits ein offenes Ticket in diesem Panel.", ephemeral=True)
             return
@@ -353,23 +330,13 @@ class TicketOpenPersistentView3(discord.ui.View):
             interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True),
         }
 
-        if ticket_mod_role_id_3:
-            mod_role = guild.get_role(ticket_mod_role_id_3)
-            if mod_role:
-                overwrites[mod_role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
-
         channel = await guild.create_text_channel(
-            name=f"cm-ticket-{ticket_count_3}",
+            name=f"haps-ticket-{ticket_count_3}",
             category=category,
             overwrites=overwrites
         )
 
-        ping_text = ""
-        if ticket_mod_role_id_3:
-            ping_text += f"<@&{ticket_mod_role_id_3}> "
-        ping_text += f"<@{interaction.user.id}>"
-
-        await channel.send(ping_text)
+        await channel.send(f"<@{interaction.user.id}>")
 
         embed = discord.Embed(
             description="Bitte haben Sie ein wenig Geduld, der Support wird sich um Sie kümmern.",
@@ -418,8 +385,7 @@ class ConfirmNoButton(discord.ui.Button):
 async def close_ticket(ctx):
     """Schließt ein Ticket über den Textbefehl $close (egal welches Panel)."""
     if isinstance(ctx.channel, discord.TextChannel):
-        # Prüfen, ob es ein Ticket-Channel ist
-        if ctx.channel.name.lower().startswith(("cm-ticket-")):
+        if ctx.channel.name.lower().startswith(("haps-ticket-")):
             await ctx.send("✅ Ticket wird geschlossen...")
             await asyncio.sleep(2)
             await ctx.channel.delete()
